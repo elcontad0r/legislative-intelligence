@@ -110,6 +110,17 @@
             background-color: #f0fdf4;
             color: #16a34a;
         }
+
+        /* Section panel slide-out animation */
+        #section-panel.open {
+            transform: translateX(0);
+        }
+        #section-panel.open #panel-backdrop {
+            opacity: 1;
+        }
+        #section-panel:not(.open) #panel-backdrop {
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -304,20 +315,32 @@
                 </section>
             </div>
 
-            <!-- Section Detail Modal (hidden) -->
-            <div id="section-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-                    <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-                        <h3 id="modal-title" class="font-bold text-lg text-gray-800"></h3>
-                        <button onclick="closeSectionModal()" class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
+            <!-- Section Detail Panel (slide-out from right) -->
+            <div id="section-panel" class="fixed inset-y-0 right-0 z-50 flex transform translate-x-full transition-transform duration-300 ease-in-out">
+                <!-- Backdrop (click to close) -->
+                <div id="panel-backdrop" class="fixed inset-0 bg-black/30 opacity-0 transition-opacity duration-300" onclick="closeSectionModal()"></div>
+                <!-- Panel Content -->
+                <div class="relative ml-auto w-full max-w-lg bg-white shadow-2xl flex flex-col h-full">
+                    <!-- Header -->
+                    <div class="flex-none border-b bg-slate-50 px-6 py-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 id="modal-title" class="font-bold text-lg text-gray-800"></h3>
+                                <p id="panel-section-name" class="text-sm text-gray-500 mt-1"></p>
+                            </div>
+                            <button onclick="closeSectionModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <div id="modal-content" class="p-6"></div>
+                    <!-- Scrollable Content -->
+                    <div id="modal-content" class="flex-1 overflow-y-auto p-6"></div>
                 </div>
             </div>
+            <!-- Keep old modal ID for compatibility (hidden alias) -->
+            <div id="section-modal" class="hidden"></div>
 
             <!-- Footer -->
             <footer class="text-center text-gray-400 text-sm py-8">
@@ -616,19 +639,27 @@
         }
 
         async function showSection(citation) {
-            const modal = document.getElementById('section-modal');
+            const panel = document.getElementById('section-panel');
             const title = document.getElementById('modal-title');
+            const sectionName = document.getElementById('panel-section-name');
             const content = document.getElementById('modal-content');
 
             title.textContent = citation;
-            content.innerHTML = '<div class="flex justify-center py-8"><div class="spinner"></div></div>';
-            modal.classList.remove('hidden');
+            sectionName.textContent = '';
+            content.innerHTML = '<div class="flex justify-center py-12"><div class="spinner"></div></div>';
+
+            // Open panel with animation
+            panel.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Prevent body scroll
 
             try {
                 const response = await fetch(`${API_BASE}/narrative/section/${encodeURIComponent(citation)}`);
                 if (!response.ok) throw new Error('Section not found');
 
                 const data = await response.json();
+
+                // Update header with section name
+                sectionName.textContent = data.name || '';
 
                 // Build USC.gov link from citation
                 const citationParts = citation.match(/(\d+) USC (\d+[a-z]*(?:-\d+)?)/);
@@ -642,7 +673,7 @@
                         <div class="flex gap-2 flex-wrap">
                             ${uscLink ? `
                                 <a href="${uscLink}" target="_blank" rel="noopener"
-                                   class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
+                                   class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                     </svg>
@@ -651,46 +682,48 @@
                             ` : ''}
                         </div>
 
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Section Name</h4>
-                            <p class="text-gray-800">${data.name || 'Unknown'}</p>
-                        </div>
-
                         <!-- AI-generated content label -->
-                        <div class="border-t pt-4">
-                            <div class="flex items-center gap-2 mb-3">
-                                <span class="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">AI-Generated Summary</span>
-                            </div>
+                        <div class="bg-purple-50 rounded-lg p-3 flex items-center gap-2">
+                            <span class="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">AI-Generated</span>
+                            <span class="text-purple-600 text-sm">Summary and analysis below</span>
                         </div>
 
                         <div>
-                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Plain English</h4>
-                            <p class="text-gray-700 leading-relaxed">${data.plain_english}</p>
+                            <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Plain English</h4>
+                            <p class="text-gray-600 leading-relaxed">${data.plain_english}</p>
                         </div>
                         <div>
-                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Why This Exists</h4>
-                            <p class="text-gray-700 leading-relaxed">${data.why_exists}</p>
+                            <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Why This Exists</h4>
+                            <p class="text-gray-600 leading-relaxed">${data.why_exists}</p>
                         </div>
                         ${data.connections && data.connections.length ? `
                             <div>
-                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Connections</h4>
-                                <ul class="list-disc list-inside text-gray-700 space-y-1">
-                                    ${data.connections.map(c => `<li>${c}</li>`).join('')}
+                                <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Connections</h4>
+                                <ul class="space-y-2">
+                                    ${data.connections.map(c => `
+                                        <li class="flex items-start gap-2 text-gray-600">
+                                            <span class="text-blue-500 mt-1">•</span>
+                                            <span>${c}</span>
+                                        </li>
+                                    `).join('')}
                                 </ul>
                             </div>
                         ` : ''}
                         ${data.amendment_story ? `
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Amendment Story</h4>
-                                <p class="text-gray-700 leading-relaxed">${data.amendment_story}</p>
+                            <div class="bg-amber-50 rounded-lg p-4 border border-amber-100">
+                                <h4 class="text-sm font-semibold text-amber-800 uppercase tracking-wide mb-2">📜 Amendment Story</h4>
+                                <p class="text-amber-900 leading-relaxed">${data.amendment_story}</p>
                             </div>
                         ` : ''}
                     </div>
                 `;
             } catch (error) {
                 content.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <p>Could not load section details</p>
+                    <div class="text-center py-12 text-gray-500">
+                        <svg class="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="font-medium">Could not load section details</p>
                         <p class="text-sm mt-2">${error.message}</p>
                     </div>
                 `;
@@ -698,17 +731,14 @@
         }
 
         function closeSectionModal() {
-            document.getElementById('section-modal').classList.add('hidden');
+            const panel = document.getElementById('section-panel');
+            panel.classList.remove('open');
+            document.body.style.overflow = ''; // Restore body scroll
         }
 
-        // Close modal on escape key
+        // Close panel on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeSectionModal();
-        });
-
-        // Close modal on background click
-        document.getElementById('section-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'section-modal') closeSectionModal();
         });
 
         // Search functionality
