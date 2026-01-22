@@ -196,7 +196,10 @@ TOPIC_KEYWORDS = OrderedDict([
         "agriculture", "precision", "capabilities", "foundation",
         "institutions", "centers", "institute", "activity", "activities",
         "astronomy", "satellite", "constellation", "microgravity", "space",
-        "utilization", "modeling", "data", "observatory",
+        "utilization", "modeling", "data", "observatory", "challenges",
+        "focus areas", "innovation", "engines", "test bed", "testbed",
+        "ethical", "societal", "considerations", "evaluation", "pilot",
+        "demonstration", "prototype", "regional",
     ]),
 ])
 
