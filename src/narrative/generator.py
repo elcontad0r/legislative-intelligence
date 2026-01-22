@@ -86,6 +86,14 @@ CHIPS_PREDECESSORS = [
 # CHIPS Act funding authorizations (from Pub. L. 117-167)
 # These are authorization levels, not appropriations - actual spending requires separate bills
 # Note: The $280B figure is often cited but includes authorizations across different timeframes
+#
+# TODO: TECHNICAL DEBT - These figures are hardcoded for the CHIPS POC.
+# For production, funding data should be:
+#   1. Parsed from appropriations section text in USC XML
+#   2. Cross-referenced with Congress.gov API for authorization levels
+#   3. Stored in Neo4j as properties on PublicLaw or USCSection nodes
+#   4. Dynamically aggregated by the narrative generator
+# See: https://api.congress.gov/v3 for potential data source
 CHIPS_FUNDING = {
     "total": "$280 billion (five-year authorization, FY2023-2027)",
     "categories": [
