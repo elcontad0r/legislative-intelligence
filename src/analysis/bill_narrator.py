@@ -24,11 +24,19 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
+class ProvisionLink:
+    """A key provision with links to specific USC sections."""
+    text: str  # The provision description
+    sections: list[str]  # USC section citations this provision relates to (e.g., ["42 USC 18851"])
+
+
+@dataclass
 class ExecutiveSummary:
     """High-level summary of a bill."""
     headline: str  # One-line hook
     overview: str  # 2-3 paragraph explanation
-    key_provisions: list[str]  # Bullet points of major provisions
+    key_provisions: list[str]  # Bullet points of major provisions (legacy, for backward compat)
+    key_provisions_linked: list[ProvisionLink]  # Provisions with section links
     why_it_matters: str  # Significance/impact
     historical_context: str  # What led to this
 
@@ -151,7 +159,13 @@ OVERVIEW:
 [2-3 paragraphs explaining what this law does, written for someone who follows policy but isn't a legal expert. Be specific about what it authorizes or changes. Don't just list topics - explain the substance. Include key funding figures.]
 
 KEY PROVISIONS:
-[5-7 bullet points of the most significant provisions, each 1-2 sentences. IMPORTANT: Include specific dollar amounts for provisions that have funding authorizations. Format amounts clearly (e.g., "$52.7 billion for semiconductor manufacturing incentives").]
+[5-7 bullet points of the most significant provisions. For each provision:
+- Write 1-2 sentences describing the provision
+- Include specific dollar amounts where applicable
+- End each bullet with a bracketed list of the most relevant USC section citations
+Format: "- Description of provision [42 USC 18851, 42 USC 18852]"
+Example: "- Establishes the National Semiconductor Technology Center to advance semiconductor research [42 USC 18851]"
+IMPORTANT: Use actual section citations from the SAMPLE SECTIONS provided above. Each provision MUST end with at least one bracketed citation.]
 
 WHY IT MATTERS:
 [One paragraph on the significance and expected impact. Use hedged language for claims about future impact - say "is expected to," "may," "aims to" rather than asserting outcomes as fact.]
@@ -368,22 +382,50 @@ Be concrete. If you don't know something, say so rather than being vague."""
 
     def _parse_executive_summary(self, response: str) -> ExecutiveSummary:
         """Parse LLM response into ExecutiveSummary."""
+        import re
         sections = self._split_by_headers(response)
 
-        # Extract key provisions as bullet points
-        key_provisions = []
+        # Extract key provisions as bullet points, parsing out section citations
+        key_provisions = []  # Legacy plain text
+        key_provisions_linked = []  # New format with section links
+
         if "KEY PROVISIONS" in sections:
             for line in sections["KEY PROVISIONS"].split("\n"):
                 line = line.strip()
                 if line.startswith("- ") or line.startswith("• "):
-                    key_provisions.append(line[2:])
+                    provision_text = line[2:]
                 elif line and not line.isupper():
-                    key_provisions.append(line)
+                    provision_text = line
+                else:
+                    continue
+
+                # Extract bracketed citations like [42 USC 18851, 42 USC 18852]
+                # Pattern matches [content] at end of line
+                citation_match = re.search(r'\[([^\]]+)\]\s*$', provision_text)
+                if citation_match:
+                    citations_str = citation_match.group(1)
+                    # Parse individual citations (comma or semicolon separated)
+                    citations = [c.strip() for c in re.split(r'[,;]', citations_str) if c.strip()]
+                    # Remove the bracketed portion from the display text
+                    text_without_citations = provision_text[:citation_match.start()].strip()
+                    key_provisions_linked.append(ProvisionLink(
+                        text=text_without_citations,
+                        sections=citations,
+                    ))
+                    key_provisions.append(text_without_citations)
+                else:
+                    # No citations found, add as-is
+                    key_provisions_linked.append(ProvisionLink(
+                        text=provision_text,
+                        sections=[],
+                    ))
+                    key_provisions.append(provision_text)
 
         return ExecutiveSummary(
             headline=sections.get("HEADLINE", "").strip(),
             overview=sections.get("OVERVIEW", "").strip(),
             key_provisions=key_provisions[:7],
+            key_provisions_linked=key_provisions_linked[:7],
             why_it_matters=sections.get("WHY IT MATTERS", "").strip(),
             historical_context=sections.get("HISTORICAL CONTEXT", "").strip(),
         )

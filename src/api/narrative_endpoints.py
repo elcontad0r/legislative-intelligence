@@ -32,10 +32,16 @@ CACHE_DIR.mkdir(parents=True, exist_ok=True)
 # Response Models
 # =============================================================================
 
+class ProvisionLinkResponse(BaseModel):
+    text: str
+    sections: list[str]
+
+
 class ExecutiveSummaryResponse(BaseModel):
     headline: str
     overview: str
-    key_provisions: list[str]
+    key_provisions: list[str]  # Legacy: plain text provisions
+    key_provisions_linked: list[ProvisionLinkResponse] | None = None  # New: provisions with section links
     why_it_matters: str
     historical_context: str
     generated_at: str
@@ -196,11 +202,13 @@ def _get_chips_data() -> dict:
             {"citation": p.content.split(":")[0] if ":" in p.content else p.content, "title": p.content.split(": ")[1].split(" (")[0] if ": " in p.content else "", "year": ""}
             for p in chips.predecessors
         ],
+        # Provide more sections to the LLM for better provision linking
+        # Include 5 from each topic group to give good coverage
         "sample_sections": [
             {"citation": s["citation"], "name": s["name"]}
             for group in chips.by_topic
-            for s in group.sections[:2]
-        ][:10],
+            for s in group.sections[:5]
+        ][:50],
     }
 
 
@@ -249,6 +257,10 @@ async def get_chips_executive_summary(regenerate: bool = False):
             "headline": summary.headline,
             "overview": summary.overview,
             "key_provisions": summary.key_provisions,
+            "key_provisions_linked": [
+                {"text": p.text, "sections": p.sections}
+                for p in summary.key_provisions_linked
+            ],
             "why_it_matters": summary.why_it_matters,
             "historical_context": summary.historical_context,
             "generated_at": datetime.now().isoformat(),

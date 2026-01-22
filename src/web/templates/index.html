@@ -439,64 +439,58 @@
 
         function renderKeyProvisions() {
             const container = document.getElementById('key-provisions');
-            const provisions = narrativeData.executive_summary.key_provisions;
 
-            // Map keywords to topics for navigation
-            const keywordToTopic = {
-                'nsf': 'NSF/Research',
-                'national science foundation': 'NSF/Research',
-                'research': 'NSF/Research',
-                'science': 'NSF/Research',
-                'doe': 'DOE/Energy',
-                'department of energy': 'DOE/Energy',
-                'energy': 'DOE/Energy',
-                'laboratory': 'DOE/Energy',
-                'national lab': 'DOE/Energy',
-                'nist': 'NIST/Standards',
-                'standards': 'NIST/Standards',
-                'semiconductor': 'Semiconductors',
-                'semiconductors': 'Semiconductors',
-                'chip': 'Semiconductors',
-                'chips': 'Semiconductors',
-                'microelectronics': 'Semiconductors',
-                'fab': 'Semiconductors',
-                'foundry': 'Semiconductors',
-                'manufacturing': 'Manufacturing',
-                'workforce': 'Workforce/Education',
-                'education': 'Workforce/Education',
-                'training': 'Workforce/Education',
-                'fellowship': 'Workforce/Education',
-                'scholarship': 'Workforce/Education',
-                'stem': 'Workforce/Education',
-                'international': 'International',
-                'foreign': 'International',
-                'export': 'International',
-                'ally': 'International',
-                'security': 'Security',
-                'defense': 'Security',
-                'classified': 'Security',
-                'intelligence': 'Security',
-                'cybersecurity': 'Cybersecurity',
-                'cyber': 'Cybersecurity',
-            };
+            // Use linked provisions if available, fall back to plain provisions
+            const linkedProvisions = narrativeData.executive_summary.key_provisions_linked;
+            const plainProvisions = narrativeData.executive_summary.key_provisions;
 
-            container.innerHTML = provisions.map(p => {
-                // Handle markdown bold **text** and make them clickable
-                let formatted = p.replace(/\*\*([^*]+)\*\*/g, (match, text) => {
-                    const lowerText = text.toLowerCase();
-                    // Find matching topic
-                    for (const [keyword, topic] of Object.entries(keywordToTopic)) {
-                        if (lowerText.includes(keyword)) {
-                            const topicIndex = narrativeData.topic_groups.findIndex(t => t.topic === topic);
-                            if (topicIndex >= 0) {
-                                return `<strong class="text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted underline-offset-2" onclick="navigateToTopic(${topicIndex}, '${topic}')">${text}</strong>`;
+            if (linkedProvisions && linkedProvisions.length > 0) {
+                // New format: provisions with direct section links
+                container.innerHTML = linkedProvisions.map(p => {
+                    // Format the provision text (handle markdown bold)
+                    let formatted = p.text.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-gray-900">$1</strong>');
+
+                    // Add clickable section links if we have them
+                    let sectionLinks = '';
+                    if (p.sections && p.sections.length > 0) {
+                        const links = p.sections.map(s =>
+                            `<button onclick="showSection('${s}')" class="text-blue-600 hover:text-blue-800 hover:underline font-mono text-xs">${s}</button>`
+                        ).join(', ');
+                        sectionLinks = `<div class="mt-1 text-xs text-gray-500">See: ${links}</div>`;
+                    }
+
+                    return `<li class="provision-item text-gray-700">${formatted}${sectionLinks}</li>`;
+                }).join('');
+            } else {
+                // Legacy fallback: plain text provisions with keyword-based topic links
+                const keywordToTopic = {
+                    'nsf': 'NSF/Research', 'national science foundation': 'NSF/Research',
+                    'research': 'NSF/Research', 'science': 'NSF/Research',
+                    'doe': 'DOE/Energy', 'department of energy': 'DOE/Energy',
+                    'energy': 'DOE/Energy', 'laboratory': 'DOE/Energy',
+                    'nist': 'NIST/Standards', 'standards': 'NIST/Standards',
+                    'semiconductor': 'Semiconductors', 'semiconductors': 'Semiconductors',
+                    'chip': 'Semiconductors', 'manufacturing': 'Manufacturing',
+                    'workforce': 'Workforce/Education', 'education': 'Workforce/Education',
+                    'security': 'Security', 'cybersecurity': 'Cybersecurity',
+                };
+
+                container.innerHTML = plainProvisions.map(p => {
+                    let formatted = p.replace(/\*\*([^*]+)\*\*/g, (match, text) => {
+                        const lowerText = text.toLowerCase();
+                        for (const [keyword, topic] of Object.entries(keywordToTopic)) {
+                            if (lowerText.includes(keyword)) {
+                                const topicIndex = narrativeData.topic_groups.findIndex(t => t.topic === topic);
+                                if (topicIndex >= 0) {
+                                    return `<strong class="text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted" onclick="navigateToTopic(${topicIndex}, '${topic}')">${text}</strong>`;
+                                }
                             }
                         }
-                    }
-                    return `<strong class="text-gray-900">${text}</strong>`;
-                });
-                return `<li class="provision-item text-gray-700">${formatted}</li>`;
-            }).join('');
+                        return `<strong class="text-gray-900">${text}</strong>`;
+                    });
+                    return `<li class="provision-item text-gray-700">${formatted}</li>`;
+                }).join('');
+            }
         }
 
         function navigateToTopic(topicIndex, topicName) {
