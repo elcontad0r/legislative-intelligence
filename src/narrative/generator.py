@@ -84,15 +84,58 @@ CHIPS_PREDECESSORS = [
 ]
 
 # Topic mappings for grouping CHIPS sections
-TOPIC_KEYWORDS = {
-    "NSF/Research": ["national science foundation", "nsf", "research", "stem", "science"],
-    "DOE/Energy": ["department of energy", "doe", "energy", "laboratory", "national lab"],
-    "NIST/Standards": ["nist", "standards", "technology", "metrology", "manufacturing"],
-    "Semiconductors": ["semiconductor", "chip", "microelectronics", "fab", "foundry"],
-    "Workforce": ["workforce", "education", "training", "fellowship", "scholarship"],
-    "International": ["international", "foreign", "export", "ally", "partner"],
-    "Security": ["security", "defense", "classified", "intelligence"],
-}
+# Keywords are matched against section names (case-insensitive)
+# Order matters: more specific topics should come BEFORE general ones
+# because the classifier uses first-match
+from collections import OrderedDict
+TOPIC_KEYWORDS = OrderedDict([
+    # Specific topics first
+    ("Semiconductors", [
+        "semiconductor", "chip", "microelectronics", "fab", "foundry",
+        "integrated circuit", "wafer", "supply chain",
+    ]),
+    ("Cybersecurity", [
+        "cybersecurity", "cyber workforce", "cyber education", "software security",
+        "authentication", "biometric",
+    ]),
+    ("Manufacturing", [
+        "manufacturing", "manufacturing usa", "domestic production",
+    ]),
+    ("Workforce/Education", [
+        "workforce", "education", "training", "fellowship", "scholarship",
+        "apprentice", "talent", "skills", "career", "student", "stem",
+        "prek", "undergraduate", "graduate", "teacher", "includes",
+    ]),
+    ("Security", [
+        "security", "defense", "classified", "intelligence",
+        "critical infrastructure", "secure data",
+    ]),
+    ("International", [
+        "international", "foreign", "export", "ally", "partner",
+        "cooperation", "treaty", "agreement", "bilateral",
+    ]),
+    ("DOE/Energy", [
+        "department of energy", "doe", "energy", "laboratory", "national lab",
+        "clean energy", "fusion", "nuclear", "renewable", "basic energy",
+    ]),
+    ("NIST/Standards", [
+        "nist", "standards", "metrology", "measurement", "calibration",
+    ]),
+    ("Funding/Appropriations", [
+        "authorization of appropriations", "appropriation",
+    ]),
+    ("Governance/Administration", [
+        "rule of construction", "authorities", "reports", "roadmap",
+        "coordination", "administration", "oversight", "inspector general",
+        "definitions",
+    ]),
+    # General catchall last
+    ("NSF/Research", [
+        "national science foundation", "nsf", "research", "science",
+        "computing", "data service", "capacity building", "assessment",
+        "program", "study", "grant",
+    ]),
+])
 
 
 # =============================================================================
