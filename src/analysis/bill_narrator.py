@@ -461,14 +461,18 @@ Be concrete. If you don't know something, say so rather than being vague."""
         )
 
     def _split_by_headers(self, text: str) -> dict[str, str]:
-        """Split response text by headers (handles markdown ## headers too)."""
+        """Split response text by headers (handles markdown formatting)."""
         sections = {}
         current_header = None
         current_content = []
 
         for line in text.split("\n"):
-            # Strip markdown header markers and clean up
-            stripped = line.strip().lstrip("#").strip().rstrip(":")
+            # Strip markdown header markers, bold markers, and clean up
+            # Handles: ## HEADLINE:, **HEADLINE:**, # **HEADLINE**, etc.
+            stripped = line.strip()
+            stripped = stripped.lstrip("#").strip()  # Remove # headers
+            stripped = stripped.strip("*").strip()   # Remove ** bold markers
+            stripped = stripped.rstrip(":").strip()  # Remove trailing colon
 
             # Check if this is a header (all caps, possibly with colon)
             if stripped.isupper() and len(stripped) > 2 and len(stripped) < 50:
