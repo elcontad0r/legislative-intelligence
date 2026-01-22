@@ -157,11 +157,13 @@ TOPIC_KEYWORDS = OrderedDict([
         "apprentice", "talent", "skills", "career", "student", "stem",
         "prek", "undergraduate", "graduate", "teacher", "includes",
         "participation", "broadening", "cost-sharing", "sharing",
+        "nondiscrimination", "hiring authority", "personnel",
     ]),
     ("Security", [
         "security", "defense", "classified", "intelligence",
         "critical infrastructure", "secure data", "controlled information",
         "background screening", "confucius", "foreign influence",
+        "concern", "prohibition", "entity of concern",
     ]),
     ("International", [
         "international", "foreign", "export", "ally", "partner",
@@ -171,6 +173,7 @@ TOPIC_KEYWORDS = OrderedDict([
         "department of energy", "doe", "energy", "laboratory", "national lab",
         "clean energy", "fusion", "nuclear", "renewable", "basic energy",
         "neutron", "scattering", "accelerator", "synchrotron", "helium",
+        "applied laboratories", "infrastructure restoration", "modernization",
     ]),
     ("NIST/Standards", [
         "nist", "standards", "metrology", "measurement", "calibration",
@@ -200,7 +203,8 @@ TOPIC_KEYWORDS = OrderedDict([
         "utilization", "modeling", "data", "observatory", "challenges",
         "focus areas", "innovation", "engines", "test bed", "testbed",
         "ethical", "societal", "considerations", "evaluation", "pilot",
-        "demonstration", "prototype", "regional",
+        "demonstration", "prototype", "regional", "quantum", "networking",
+        "communications",
     ]),
 ])
 
