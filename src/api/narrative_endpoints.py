@@ -355,6 +355,7 @@ async def get_section_context(citation: str, regenerate: bool = False):
 
     try:
         from ..graph.neo4j_store import Neo4jStore
+        from ..services.section_text import get_section_text
 
         store = Neo4jStore()
         narrator = _get_narrator()
@@ -363,6 +364,9 @@ async def get_section_context(citation: str, regenerate: bool = False):
         section = store.get_usc_section(citation)
         if not section:
             raise HTTPException(status_code=404, detail=f"Section not found: {citation}")
+
+        # Get section text from XML/cache (not stored in Neo4j Aura)
+        section_text = section.get("text") or get_section_text(citation) or ""
 
         # Get amendments
         amendments = []
@@ -401,7 +405,7 @@ async def get_section_context(citation: str, regenerate: bool = False):
         context = narrator.generate_section_context(
             section_citation=citation,
             section_name=section.get("section_name", ""),
-            section_text=section.get("text", ""),
+            section_text=section_text,
             amendments=amendments,
             related_sections=related,
         )
