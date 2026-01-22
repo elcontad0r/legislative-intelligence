@@ -75,6 +75,41 @@
         .collapsible-content.expanded {
             max-height: 2000px;
         }
+
+        /* Amendment sparkline indicator */
+        .amendment-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: 8px;
+        }
+        .amendment-bar {
+            width: 3px;
+            border-radius: 1px;
+            background-color: #dc2626;
+            opacity: 0.7;
+        }
+        .amendment-bar:nth-child(1) { height: 4px; }
+        .amendment-bar:nth-child(2) { height: 6px; }
+        .amendment-bar:nth-child(3) { height: 8px; }
+        .amendment-bar:nth-child(4) { height: 10px; }
+        .amendment-bar:nth-child(5) { height: 12px; }
+
+        .amendment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            background-color: #fef2f2;
+            color: #dc2626;
+            font-weight: 500;
+        }
+        .amendment-badge-new {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -489,10 +524,13 @@
                         <div class="px-6 pb-4">
                             <ul class="space-y-1">
                                 ${topic.sample_sections.map(s => `
-                                    <li class="section-link py-2 px-2 rounded cursor-pointer border-l-2 border-transparent hover:border-blue-500"
+                                    <li class="section-link py-2 px-2 rounded cursor-pointer border-l-2 border-transparent hover:border-blue-500 flex items-center justify-between"
                                         onclick="showSection('${s.citation}')">
-                                        <span class="font-mono text-sm text-blue-600">${s.citation}</span>
-                                        <span class="text-gray-600 ml-2">${s.name || ''}</span>
+                                        <div>
+                                            <span class="font-mono text-sm text-blue-600">${s.citation}</span>
+                                            <span class="text-gray-600 ml-2">${s.name || ''}</span>
+                                        </div>
+                                        ${renderAmendmentIndicator(s.amendment_count)}
                                     </li>
                                 `).join('')}
                                 ${topic.section_count > topic.sample_sections.length ? `
@@ -505,6 +543,22 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function renderAmendmentIndicator(count) {
+            if (!count || count === 0) {
+                // New section - no amendments
+                return '<span class="amendment-badge amendment-badge-new" title="New section created by CHIPS">New</span>';
+            }
+            // Show sparkline for amended sections
+            const bars = Math.min(count, 5); // Cap visual at 5 bars
+            const barHtml = Array(bars).fill('<div class="amendment-bar"></div>').join('');
+            return `
+                <span class="amendment-badge" title="Amended ${count} time${count > 1 ? 's' : ''}">
+                    <span class="amendment-indicator">${barHtml}</span>
+                    ${count}x
+                </span>
+            `;
         }
 
         function getTopicIcon(topic) {

@@ -120,6 +120,19 @@ def _get_chips_data() -> dict:
     gen = NarrativeGenerator(store)
     chips = gen.generate_chips_story()
 
+    # Get amendment counts for all sections in one query
+    amendment_counts = {}
+    with store.session() as session:
+        result = session.run("""
+            MATCH (usc:USCSection)
+            OPTIONAL MATCH (usc)<-[r:AMENDS]-(pl:PublicLaw)
+            WITH usc.id as citation, count(r) as amendment_count
+            WHERE amendment_count > 0
+            RETURN citation, amendment_count
+        """)
+        for r in result:
+            amendment_counts[r["citation"]] = r["amendment_count"]
+
     # Extract data for narrator
     topic_breakdown = {}
     topic_groups_raw = []
@@ -129,7 +142,11 @@ def _get_chips_data() -> dict:
             "topic": group.topic,
             "section_count": len(group.sections),
             "sample_sections": [
-                {"citation": s["citation"], "name": s["name"]}
+                {
+                    "citation": s["citation"],
+                    "name": s["name"],
+                    "amendment_count": amendment_counts.get(s["citation"], 0),
+                }
                 for s in group.sections[:5]
             ],
         })
