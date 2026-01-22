@@ -151,6 +151,7 @@ TOPIC_KEYWORDS = OrderedDict([
     ]),
     ("Manufacturing", [
         "manufacturing", "manufacturing usa", "domestic production",
+        "small business", "advocacy", "assistance",
     ]),
     ("Workforce/Education", [
         "workforce", "education", "training", "fellowship", "scholarship",
@@ -158,6 +159,7 @@ TOPIC_KEYWORDS = OrderedDict([
         "prek", "undergraduate", "graduate", "teacher", "includes",
         "participation", "broadening", "cost-sharing", "sharing",
         "nondiscrimination", "hiring authority", "personnel",
+        "presidential awards", "teaching excellence", "award",
     ]),
     ("Security", [
         "security", "defense", "classified", "intelligence",
