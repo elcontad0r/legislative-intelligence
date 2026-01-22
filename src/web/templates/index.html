@@ -205,8 +205,9 @@
             <!-- Why It Matters & Historical Context -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
-                    <div class="px-6 py-4 bg-amber-50 border-b">
+                    <div class="px-6 py-4 bg-amber-50 border-b flex items-center justify-between">
                         <h3 class="text-lg font-bold text-gray-800">⚡ Why It Matters</h3>
+                        <span class="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">AI-generated</span>
                     </div>
                     <div class="p-6">
                         <p id="why-it-matters" class="text-gray-700 leading-relaxed"></p>
@@ -214,8 +215,9 @@
                 </section>
 
                 <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
-                    <div class="px-6 py-4 bg-purple-50 border-b">
+                    <div class="px-6 py-4 bg-purple-50 border-b flex items-center justify-between">
                         <h3 class="text-lg font-bold text-gray-800">📜 Historical Context</h3>
+                        <span class="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">AI-generated</span>
                     </div>
                     <div class="p-6">
                         <p id="historical-context" class="text-gray-700 leading-relaxed"></p>
@@ -228,6 +230,7 @@
                 <div class="flex items-center gap-2 text-slate-400 text-sm mb-3">
                     <span>💡</span>
                     <span>Interesting Thread</span>
+                    <span class="bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded ml-2">AI-generated observation</span>
                 </div>
                 <p id="highlight" class="text-lg leading-relaxed text-slate-200"></p>
             </section>
@@ -385,7 +388,6 @@
                 'nsf': 'NSF/Research',
                 'national science foundation': 'NSF/Research',
                 'research': 'NSF/Research',
-                'stem': 'NSF/Research',
                 'science': 'NSF/Research',
                 'doe': 'DOE/Energy',
                 'department of energy': 'DOE/Energy',
@@ -394,7 +396,6 @@
                 'national lab': 'DOE/Energy',
                 'nist': 'NIST/Standards',
                 'standards': 'NIST/Standards',
-                'manufacturing': 'NIST/Standards',
                 'semiconductor': 'Semiconductors',
                 'semiconductors': 'Semiconductors',
                 'chip': 'Semiconductors',
@@ -402,11 +403,13 @@
                 'microelectronics': 'Semiconductors',
                 'fab': 'Semiconductors',
                 'foundry': 'Semiconductors',
-                'workforce': 'Workforce',
-                'education': 'Workforce',
-                'training': 'Workforce',
-                'fellowship': 'Workforce',
-                'scholarship': 'Workforce',
+                'manufacturing': 'Manufacturing',
+                'workforce': 'Workforce/Education',
+                'education': 'Workforce/Education',
+                'training': 'Workforce/Education',
+                'fellowship': 'Workforce/Education',
+                'scholarship': 'Workforce/Education',
+                'stem': 'Workforce/Education',
                 'international': 'International',
                 'foreign': 'International',
                 'export': 'International',
@@ -415,6 +418,8 @@
                 'defense': 'Security',
                 'classified': 'Security',
                 'intelligence': 'Security',
+                'cybersecurity': 'Cybersecurity',
+                'cyber': 'Cybersecurity',
             };
 
             container.innerHTML = provisions.map(p => {
@@ -508,9 +513,13 @@
                 'DOE/Energy': '⚡',
                 'NIST/Standards': '📏',
                 'Semiconductors': '🔲',
-                'Workforce': '👥',
+                'Workforce/Education': '👥',
                 'International': '🌐',
                 'Security': '🛡️',
+                'Cybersecurity': '🔐',
+                'Manufacturing': '🏭',
+                'Funding/Appropriations': '💰',
+                'Governance/Administration': '🏛️',
                 'Other': '📋'
             };
             return icons[topic] || '📄';
@@ -566,12 +575,40 @@
                 if (!response.ok) throw new Error('Section not found');
 
                 const data = await response.json();
+
+                // Build USC.gov link from citation
+                const citationParts = citation.match(/(\d+) USC (\d+[a-z]*(?:-\d+)?)/);
+                const uscLink = citationParts
+                    ? `https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title${citationParts[1]}-section${citationParts[2]}&edition=prelim`
+                    : null;
+
                 content.innerHTML = `
                     <div class="space-y-6">
+                        <!-- Source links -->
+                        <div class="flex gap-2 flex-wrap">
+                            ${uscLink ? `
+                                <a href="${uscLink}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                    </svg>
+                                    View on USC.gov
+                                </a>
+                            ` : ''}
+                        </div>
+
                         <div>
                             <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Section Name</h4>
                             <p class="text-gray-800">${data.name || 'Unknown'}</p>
                         </div>
+
+                        <!-- AI-generated content label -->
+                        <div class="border-t pt-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">AI-Generated Summary</span>
+                            </div>
+                        </div>
+
                         <div>
                             <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Plain English</h4>
                             <p class="text-gray-700 leading-relaxed">${data.plain_english}</p>

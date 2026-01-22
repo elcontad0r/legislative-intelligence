@@ -205,23 +205,25 @@ async def search_sections(
     limit: int = Query(default=20, le=100, description="Max results"),
 ):
     """
-    Search US Code sections by name or content.
+    Search US Code sections by name or citation.
 
     Examples:
-    - /search?q=hospital
-    - /search?q=physician payment
-    - /search?q=fraud
+    - /search?q=semiconductor
+    - /search?q=workforce
+    - /search?q=42 USC 18911
     """
     if not graph_store:
         raise HTTPException(status_code=503, detail="Service not initialized")
 
     with graph_store.session() as session:
+        # Search section name and citation (id)
+        # Note: section text is not stored in Aura (too large), so we search names only
         result = session.run("""
             MATCH (usc:USCSection)
             WHERE toLower(usc.section_name) CONTAINS toLower($search_term)
-            OR toLower(usc.text) CONTAINS toLower($search_term)
-            RETURN usc.id as id, usc.section_name as section_name,
-                   substring(usc.text, 0, 200) as snippet
+               OR toLower(usc.id) CONTAINS toLower($search_term)
+            RETURN usc.id as id, usc.section_name as section_name
+            ORDER BY usc.id
             LIMIT $max_results
         """, search_term=q, max_results=limit)
 
@@ -229,7 +231,7 @@ async def search_sections(
             SearchResult(
                 id=r["id"],
                 section_name=r["section_name"],
-                snippet=r["snippet"],
+                snippet=None,  # Text not stored in Aura
             )
             for r in result
         ]
