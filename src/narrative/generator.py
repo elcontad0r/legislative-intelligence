@@ -170,7 +170,7 @@ TOPIC_KEYWORDS = OrderedDict([
     ("DOE/Energy", [
         "department of energy", "doe", "energy", "laboratory", "national lab",
         "clean energy", "fusion", "nuclear", "renewable", "basic energy",
-        "neutron", "scattering", "accelerator", "synchrotron",
+        "neutron", "scattering", "accelerator", "synchrotron", "helium",
     ]),
     ("NIST/Standards", [
         "nist", "standards", "metrology", "measurement", "calibration",
@@ -182,6 +182,8 @@ TOPIC_KEYWORDS = OrderedDict([
         "rule of construction", "authorities", "reports", "roadmap",
         "coordination", "administration", "oversight", "inspector general",
         "definitions", "reporting to congress", "online resource",
+        "operation", "maintenance", "reviews", "review", "policy",
+        "strategy", "plan", "implementation",
     ]),
     # General catchall last - this should be broad to catch most remaining sections
     ("NSF/Research", [
@@ -191,6 +193,8 @@ TOPIC_KEYWORDS = OrderedDict([
         "biological", "field station", "marine laboratory", "iot",
         "agriculture", "precision", "capabilities", "foundation",
         "institutions", "centers", "institute", "activity", "activities",
+        "astronomy", "satellite", "constellation", "microgravity", "space",
+        "utilization", "modeling", "data", "observatory",
     ]),
 ])
 
