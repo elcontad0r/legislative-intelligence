@@ -143,12 +143,12 @@ KEY PROVISIONS:
 [5-7 bullet points of the most significant provisions, each 1-2 sentences]
 
 WHY IT MATTERS:
-[One paragraph on the significance and expected impact]
+[One paragraph on the significance and expected impact. Use hedged language for claims about future impact - say "is expected to," "may," "aims to" rather than asserting outcomes as fact.]
 
 HISTORICAL CONTEXT:
-[One paragraph on what led to this legislation - the policy problem it addresses, predecessor efforts, why now]
+[One paragraph on what led to this legislation - the policy problem it addresses, predecessor efforts, why now. Focus on verifiable facts about the legislative history and stated purposes rather than speculative claims.]
 
-Be concrete and specific. Avoid generic language like "landmark legislation" or "historic investment" unless you explain why. Ground claims in the actual provisions."""
+Be concrete and specific. Avoid generic language like "landmark legislation" or "historic investment" unless you explain why. Ground claims in the actual provisions. Use appropriate epistemic hedging for predictions and causal claims."""
 
         response = self._call_api(prompt)
         return self._parse_executive_summary(response)
@@ -197,7 +197,7 @@ PATHWAYS:
   ALSO SEE: [2-3 other relevant sections]
 
 MOST INTERESTING THREAD:
-[One paragraph highlighting the most interesting story in this legislation - maybe a section that's been amended many times, or an unexpected provision, or a notable policy shift. Give the reader something to be curious about.]
+[One paragraph highlighting a noteworthy pattern or observation in this legislation. IMPORTANT: Use appropriate epistemic hedging - say "appears to suggest," "may indicate," "one possible interpretation," etc. Do NOT make strong causal claims without evidence. Focus on observable facts (amendment frequency, unexpected provisions) rather than speculative claims about intent or policy implications.]
 
 Be specific. Don't just say "if you care about research funding" - say "if you want to understand how NSF's budget authority is changing" and point to the actual sections."""
 
