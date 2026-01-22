@@ -211,6 +211,8 @@ async def get_chips_executive_summary(regenerate: bool = False):
 
     # Generate fresh summary
     try:
+        from ..narrative.generator import CHIPS_FUNDING
+
         narrator = _get_narrator()
         data = _get_chips_data()
 
@@ -223,6 +225,7 @@ async def get_chips_executive_summary(regenerate: bool = False):
             topic_breakdown=data["topic_breakdown"],
             predecessor_laws=data["predecessor_laws"],
             sample_sections=data["sample_sections"],
+            funding_data=CHIPS_FUNDING,
         )
 
         result = {

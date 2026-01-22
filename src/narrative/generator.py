@@ -83,6 +83,57 @@ CHIPS_PREDECESSORS = [
     {"citation": "Pub. L. 115-368", "title": "National Quantum Initiative Act"},
 ]
 
+# CHIPS Act funding authorizations (from Pub. L. 117-167)
+# These are authorization levels, not appropriations - actual spending requires separate bills
+CHIPS_FUNDING = {
+    "total": "$280 billion",
+    "categories": [
+        {
+            "name": "Semiconductor Manufacturing Incentives",
+            "amount": "$52.7 billion",
+            "details": "CHIPS for America Fund for domestic fab construction and equipment",
+            "section": "Division A, Title I",
+        },
+        {
+            "name": "Semiconductor R&D",
+            "amount": "$11 billion",
+            "details": "National Semiconductor Technology Center, National Advanced Packaging Manufacturing Program, and NIST metrology R&D",
+            "section": "Division A, Title I",
+        },
+        {
+            "name": "NSF Reauthorization",
+            "amount": "$81 billion",
+            "details": "Five-year authorization for National Science Foundation including new Directorate for Technology, Innovation, and Partnerships (TIP)",
+            "section": "Division E",
+        },
+        {
+            "name": "DOE Science Programs",
+            "amount": "$67 billion",
+            "details": "Five-year authorization for Department of Energy Office of Science research programs",
+            "section": "Division B",
+        },
+        {
+            "name": "Regional Innovation Hubs",
+            "amount": "$10 billion",
+            "details": "Regional Technology and Innovation Hub Program via EDA",
+            "section": "Division B, Title VI",
+        },
+        {
+            "name": "STEM Workforce Programs",
+            "amount": "$13 billion",
+            "details": "STEM education, workforce training, and scholarship programs",
+            "section": "Division E, Title III",
+        },
+        {
+            "name": "Wireless Supply Chain Innovation",
+            "amount": "$1.5 billion",
+            "details": "Public Wireless Supply Chain Innovation Fund",
+            "section": "Division A, Title III",
+        },
+    ],
+    "note": "Authorization levels represent spending ceilings; actual appropriations may differ.",
+}
+
 # Topic mappings for grouping CHIPS sections
 # Keywords are matched against section names (case-insensitive)
 # Order matters: more specific topics should come BEFORE general ones

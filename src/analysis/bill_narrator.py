@@ -92,6 +92,7 @@ class BillNarrator:
         topic_breakdown: dict[str, int],
         predecessor_laws: list[dict],
         sample_sections: list[dict],
+        funding_data: dict | None = None,
     ) -> ExecutiveSummary:
         """
         Generate an executive summary for a bill.
@@ -109,6 +110,16 @@ class BillNarrator:
         Returns:
             ExecutiveSummary with headline, overview, provisions, etc.
         """
+        # Format funding information if available
+        funding_section = ""
+        if funding_data:
+            funding_section = f"""
+FUNDING AUTHORIZATIONS:
+Total: {funding_data.get('total', 'Not specified')}
+{self._format_funding_categories(funding_data.get('categories', []))}
+Note: {funding_data.get('note', 'Authorization levels may differ from actual appropriations.')}
+"""
+
         prompt = f"""You are a legislative analyst writing an executive summary for policy professionals.
 
 Generate an executive summary for this legislation:
@@ -119,7 +130,7 @@ Enacted: {enacted_date}
 SCOPE:
 - Created {sections_created} new sections of law
 - Amended {sections_amended} existing sections
-
+{funding_section}
 TOPIC BREAKDOWN:
 {self._format_topic_breakdown(topic_breakdown)}
 
@@ -137,10 +148,10 @@ HEADLINE:
 [One punchy sentence that captures what this law does - suitable for a news headline]
 
 OVERVIEW:
-[2-3 paragraphs explaining what this law does, written for someone who follows policy but isn't a legal expert. Be specific about what it authorizes or changes. Don't just list topics - explain the substance.]
+[2-3 paragraphs explaining what this law does, written for someone who follows policy but isn't a legal expert. Be specific about what it authorizes or changes. Don't just list topics - explain the substance. Include key funding figures.]
 
 KEY PROVISIONS:
-[5-7 bullet points of the most significant provisions, each 1-2 sentences]
+[5-7 bullet points of the most significant provisions, each 1-2 sentences. IMPORTANT: Include specific dollar amounts for provisions that have funding authorizations. Format amounts clearly (e.g., "$52.7 billion for semiconductor manufacturing incentives").]
 
 WHY IT MATTERS:
 [One paragraph on the significance and expected impact. Use hedged language for claims about future impact - say "is expected to," "may," "aims to" rather than asserting outcomes as fact.]
@@ -283,6 +294,16 @@ Be concrete. If you don't know something, say so rather than being vague."""
         for topic, count in sorted(topics.items(), key=lambda x: -x[1]):
             lines.append(f"- {topic}: {count} sections")
         return "\n".join(lines)
+
+    def _format_funding_categories(self, categories: list[dict]) -> str:
+        """Format funding categories for the prompt."""
+        lines = []
+        for cat in categories:
+            name = cat.get("name", "")
+            amount = cat.get("amount", "")
+            details = cat.get("details", "")
+            lines.append(f"- {name}: {amount} - {details}")
+        return "\n".join(lines) if lines else "Not specified"
 
     def _format_predecessors(self, laws: list[dict]) -> str:
         lines = []
