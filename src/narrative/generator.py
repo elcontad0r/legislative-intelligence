@@ -156,6 +156,7 @@ TOPIC_KEYWORDS = OrderedDict([
         "workforce", "education", "training", "fellowship", "scholarship",
         "apprentice", "talent", "skills", "career", "student", "stem",
         "prek", "undergraduate", "graduate", "teacher", "includes",
+        "participation", "broadening", "cost-sharing", "sharing",
     ]),
     ("Security", [
         "security", "defense", "classified", "intelligence",
@@ -168,6 +169,7 @@ TOPIC_KEYWORDS = OrderedDict([
     ("DOE/Energy", [
         "department of energy", "doe", "energy", "laboratory", "national lab",
         "clean energy", "fusion", "nuclear", "renewable", "basic energy",
+        "neutron", "scattering", "accelerator", "synchrotron",
     ]),
     ("NIST/Standards", [
         "nist", "standards", "metrology", "measurement", "calibration",
@@ -178,7 +180,7 @@ TOPIC_KEYWORDS = OrderedDict([
     ("Governance/Administration", [
         "rule of construction", "authorities", "reports", "roadmap",
         "coordination", "administration", "oversight", "inspector general",
-        "definitions",
+        "definitions", "reporting to congress", "online resource",
     ]),
     # General catchall last
     ("NSF/Research", [
