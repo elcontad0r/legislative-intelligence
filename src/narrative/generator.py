@@ -160,7 +160,8 @@ TOPIC_KEYWORDS = OrderedDict([
     ]),
     ("Security", [
         "security", "defense", "classified", "intelligence",
-        "critical infrastructure", "secure data",
+        "critical infrastructure", "secure data", "controlled information",
+        "background screening", "confucius", "foreign influence",
     ]),
     ("International", [
         "international", "foreign", "export", "ally", "partner",
@@ -182,11 +183,14 @@ TOPIC_KEYWORDS = OrderedDict([
         "coordination", "administration", "oversight", "inspector general",
         "definitions", "reporting to congress", "online resource",
     ]),
-    # General catchall last
+    # General catchall last - this should be broad to catch most remaining sections
     ("NSF/Research", [
         "national science foundation", "nsf", "research", "science",
         "computing", "data service", "capacity building", "assessment",
-        "program", "study", "grant",
+        "program", "study", "grant", "impact", "impacts", "broader",
+        "biological", "field station", "marine laboratory", "iot",
+        "agriculture", "precision", "capabilities", "foundation",
+        "institutions", "centers", "institute", "activity", "activities",
     ]),
 ])
 
