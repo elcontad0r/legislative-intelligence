@@ -86,8 +86,10 @@ def migrate():
             result = local_session.run("""
                 MATCH (s:USCSection)
                 RETURN s.id as id, s.title as title, s.section as section,
-                       s.name as name, s.source_credit as source_credit,
-                       s.enacted_by as enacted_by, s.amendment_count as amendment_count
+                       s.section_name as section_name, s.source_credit as source_credit,
+                       s.enacted_by as enacted_by, s.amendment_count as amendment_count,
+                       s.chapter as chapter, s.chapter_name as chapter_name,
+                       s.title_name as title_name
             """)
             sections = list(result)
             print(f"Found {len(sections)} sections to migrate")

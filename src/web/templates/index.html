@@ -81,24 +81,48 @@
     <!-- Header -->
     <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-lg">
         <div class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <p class="text-slate-400 text-sm">Legislative Intelligence System</p>
                     <h1 class="text-xl sm:text-2xl font-bold tracking-tight mt-1">
                         CHIPS and Science Act
                     </h1>
                 </div>
-                <div class="flex items-center gap-4">
-                    <span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-xs font-medium">
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <!-- Search Bar -->
+                    <div class="relative flex-1 sm:flex-none sm:w-64">
+                        <input type="text"
+                               id="search-input"
+                               placeholder="Search sections..."
+                               class="w-full px-4 py-2 pl-10 rounded-lg bg-slate-700/50 border border-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                               onkeyup="handleSearchInput(event)">
+                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-xs font-medium hidden sm:inline">
                         POC Demo
                     </span>
-                    <a href="https://seedai.org" target="_blank" class="text-slate-400 hover:text-white transition text-sm">
+                    <a href="https://seedai.org" target="_blank" class="text-slate-400 hover:text-white transition text-sm hidden sm:inline">
                         SeedAI
                     </a>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- Search Results Overlay -->
+    <div id="search-results" class="hidden fixed top-24 right-4 left-4 sm:left-auto sm:w-96 bg-white rounded-xl shadow-2xl z-50 max-h-96 overflow-y-auto border border-gray-200">
+        <div class="sticky top-0 bg-gray-50 px-4 py-2 border-b flex justify-between items-center">
+            <span id="search-results-count" class="text-sm text-gray-600"></span>
+            <button onclick="closeSearch()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="search-results-list" class="divide-y divide-gray-100"></div>
+    </div>
 
     <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -356,11 +380,76 @@
             const container = document.getElementById('key-provisions');
             const provisions = narrativeData.executive_summary.key_provisions;
 
+            // Map keywords to topics for navigation
+            const keywordToTopic = {
+                'nsf': 'NSF/Research',
+                'national science foundation': 'NSF/Research',
+                'research': 'NSF/Research',
+                'stem': 'NSF/Research',
+                'science': 'NSF/Research',
+                'doe': 'DOE/Energy',
+                'department of energy': 'DOE/Energy',
+                'energy': 'DOE/Energy',
+                'laboratory': 'DOE/Energy',
+                'national lab': 'DOE/Energy',
+                'nist': 'NIST/Standards',
+                'standards': 'NIST/Standards',
+                'manufacturing': 'NIST/Standards',
+                'semiconductor': 'Semiconductors',
+                'semiconductors': 'Semiconductors',
+                'chip': 'Semiconductors',
+                'chips': 'Semiconductors',
+                'microelectronics': 'Semiconductors',
+                'fab': 'Semiconductors',
+                'foundry': 'Semiconductors',
+                'workforce': 'Workforce',
+                'education': 'Workforce',
+                'training': 'Workforce',
+                'fellowship': 'Workforce',
+                'scholarship': 'Workforce',
+                'international': 'International',
+                'foreign': 'International',
+                'export': 'International',
+                'ally': 'International',
+                'security': 'Security',
+                'defense': 'Security',
+                'classified': 'Security',
+                'intelligence': 'Security',
+            };
+
             container.innerHTML = provisions.map(p => {
-                // Handle markdown bold **text**
-                const formatted = p.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-gray-900">$1</strong>');
+                // Handle markdown bold **text** and make them clickable
+                let formatted = p.replace(/\*\*([^*]+)\*\*/g, (match, text) => {
+                    const lowerText = text.toLowerCase();
+                    // Find matching topic
+                    for (const [keyword, topic] of Object.entries(keywordToTopic)) {
+                        if (lowerText.includes(keyword)) {
+                            const topicIndex = narrativeData.topic_groups.findIndex(t => t.topic === topic);
+                            if (topicIndex >= 0) {
+                                return `<strong class="text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted underline-offset-2" onclick="navigateToTopic(${topicIndex}, '${topic}')">${text}</strong>`;
+                            }
+                        }
+                    }
+                    return `<strong class="text-gray-900">${text}</strong>`;
+                });
                 return `<li class="provision-item text-gray-700">${formatted}</li>`;
             }).join('');
+        }
+
+        function navigateToTopic(topicIndex, topicName) {
+            // Scroll to the topic and expand it
+            const topicsSection = document.getElementById('topics-container');
+            topicsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Wait for scroll, then expand the topic
+            setTimeout(() => {
+                const content = document.getElementById(`topic-content-${topicIndex}`);
+                const arrow = document.getElementById(`topic-arrow-${topicIndex}`);
+                if (!content.classList.contains('expanded')) {
+                    content.classList.add('expanded');
+                    arrow.classList.add('rotate-180');
+                }
+            }, 500);
         }
 
         function renderContext() {
@@ -529,6 +618,85 @@
         // Close modal on background click
         document.getElementById('section-modal').addEventListener('click', (e) => {
             if (e.target.id === 'section-modal') closeSectionModal();
+        });
+
+        // Search functionality
+        let searchTimeout = null;
+
+        function handleSearchInput(event) {
+            const query = event.target.value.trim();
+
+            // Clear previous timeout
+            if (searchTimeout) clearTimeout(searchTimeout);
+
+            if (query.length < 2) {
+                closeSearch();
+                return;
+            }
+
+            // Debounce: wait 300ms after typing stops
+            searchTimeout = setTimeout(() => performSearch(query), 300);
+        }
+
+        async function performSearch(query) {
+            const resultsContainer = document.getElementById('search-results');
+            const resultsList = document.getElementById('search-results-list');
+            const resultsCount = document.getElementById('search-results-count');
+
+            resultsContainer.classList.remove('hidden');
+            resultsList.innerHTML = '<div class="p-4 text-center text-gray-500">Searching...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}&limit=15`);
+                if (!response.ok) throw new Error('Search failed');
+
+                const results = await response.json();
+
+                if (results.length === 0) {
+                    resultsCount.textContent = 'No results';
+                    resultsList.innerHTML = '<div class="p-4 text-center text-gray-500">No matching sections found</div>';
+                    return;
+                }
+
+                resultsCount.textContent = `${results.length} result${results.length > 1 ? 's' : ''}`;
+                resultsList.innerHTML = results.map(r => `
+                    <div class="p-3 hover:bg-blue-50 cursor-pointer transition" onclick="selectSearchResult('${r.id}')">
+                        <div class="font-mono text-sm text-blue-600">${r.id}</div>
+                        <div class="text-sm text-gray-700 mt-1">${r.section_name || 'Untitled section'}</div>
+                        ${r.snippet ? `<div class="text-xs text-gray-500 mt-1 truncate">${r.snippet}...</div>` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                resultsCount.textContent = 'Error';
+                resultsList.innerHTML = `<div class="p-4 text-center text-red-500">Search error: ${error.message}</div>`;
+            }
+        }
+
+        function selectSearchResult(citation) {
+            closeSearch();
+            document.getElementById('search-input').value = '';
+            showSection(citation);
+        }
+
+        function closeSearch() {
+            document.getElementById('search-results').classList.add('hidden');
+        }
+
+        // Close search on click outside
+        document.addEventListener('click', (e) => {
+            const searchResults = document.getElementById('search-results');
+            const searchInput = document.getElementById('search-input');
+            if (!searchResults.contains(e.target) && e.target !== searchInput) {
+                closeSearch();
+            }
+        });
+
+        // Close search on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSearch();
+                document.getElementById('search-input').blur();
+            }
         });
     </script>
 </body>

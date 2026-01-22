@@ -134,13 +134,14 @@ def _get_chips_data() -> dict:
             ],
         })
 
-    # Get most amended sections
+    # Get most amended sections THAT CHIPS TOUCHED
+    # This prevents showing unrelated sections like Medicare/Medicaid that happen to be heavily amended
     most_amended = []
     with store.session() as session:
         result = session.run("""
-            MATCH (usc:USCSection)<-[r:AMENDS]-(pl:PublicLaw)
+            MATCH (chips:PublicLaw {id: "Pub. L. 117-167"})-[:AMENDS]->(usc:USCSection)
+            OPTIONAL MATCH (usc)<-[r:AMENDS]-(pl:PublicLaw)
             WITH usc, count(r) as amendment_count
-            WHERE amendment_count > 3
             RETURN usc.id as citation, usc.section_name as name, amendment_count
             ORDER BY amendment_count DESC
             LIMIT 10

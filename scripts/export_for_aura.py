@@ -53,8 +53,10 @@ def export_to_cypher():
         result = session.run("""
             MATCH (s:USCSection)
             RETURN s.id as id, s.title as title, s.section as section,
-                   s.name as name, s.text as text, s.source_credit as source_credit,
-                   s.enacted_by as enacted_by, s.amendment_count as amendment_count
+                   s.section_name as section_name, s.text as text, s.source_credit as source_credit,
+                   s.enacted_by as enacted_by, s.amendment_count as amendment_count,
+                   s.chapter as chapter, s.chapter_name as chapter_name,
+                   s.title_name as title_name
             LIMIT 5000
         """)
 
@@ -64,10 +66,13 @@ def export_to_cypher():
                 "id": record["id"],
                 "title": record["title"],
                 "section": record["section"],
-                "name": record["name"] or "",
+                "section_name": record["section_name"] or "",
                 "source_credit": record["source_credit"] or "",
                 "enacted_by": record["enacted_by"] or "",
                 "amendment_count": record["amendment_count"] or 0,
+                "chapter": record["chapter"] or "",
+                "chapter_name": record["chapter_name"] or "",
+                "title_name": record["title_name"] or "",
             }
             # Skip text for now - too large
             props_str = ", ".join(f'{k}: {repr(v)}' for k, v in props.items() if v)
