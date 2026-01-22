@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHIPS and Science Act - Legislative Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tier-1': '#10b981',
+                        'tier-2': '#3b82f6',
+                        'tier-3': '#eab308',
+                        'tier-4': '#f97316',
+                        'tier-5': '#ef4444',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+
+        .pathway-card {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        .pathway-card:hover {
+            transform: translateX(4px);
+            border-left-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+
+        .provision-item {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        .provision-item::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+
+        .section-link {
+            transition: all 0.15s ease;
+        }
+        .section-link:hover {
+            background-color: #eff6ff;
+            padding-left: 0.5rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .collapsible-content.expanded {
+            max-height: 2000px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-slate-400 text-sm">Legislative Intelligence System</p>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight mt-1">
+                        CHIPS and Science Act
+                    </h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-xs font-medium">
+                        POC Demo
+                    </span>
+                    <a href="https://seedai.org" target="_blank" class="text-slate-400 hover:text-white transition text-sm">
+                        SeedAI
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <!-- Loading State -->
+        <div id="loading" class="flex flex-col items-center justify-center py-20">
+            <div class="spinner mb-4"></div>
+            <p class="text-gray-500">Loading narrative...</p>
+            <p class="text-gray-400 text-sm mt-2">Generating LLM-powered analysis</p>
+        </div>
+
+        <!-- Content (hidden until loaded) -->
+        <div id="main-content" class="hidden space-y-8">
+
+            <!-- Headline Banner -->
+            <section class="animate-fade-in">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-8 text-white shadow-lg">
+                    <div class="flex items-center gap-2 text-blue-200 text-sm mb-3">
+                        <span>Pub. L. 117-167</span>
+                        <span>•</span>
+                        <span>Enacted August 9, 2022</span>
+                    </div>
+                    <h2 id="headline" class="text-2xl sm:text-3xl font-bold leading-snug"></h2>
+                </div>
+            </section>
+
+            <!-- Quick Stats -->
+            <section class="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-fade-in">
+                <div class="bg-white rounded-lg p-4 shadow text-center">
+                    <div id="created-count" class="text-3xl font-bold text-emerald-600">144</div>
+                    <div class="text-gray-500 text-sm">Sections Created</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow text-center">
+                    <div id="amended-count" class="text-3xl font-bold text-amber-600">51</div>
+                    <div class="text-gray-500 text-sm">Sections Amended</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow text-center">
+                    <div id="topic-count" class="text-3xl font-bold text-blue-600">-</div>
+                    <div class="text-gray-500 text-sm">Topic Areas</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow text-center">
+                    <div class="text-3xl font-bold text-purple-600">$280B</div>
+                    <div class="text-gray-500 text-sm">Authorized</div>
+                </div>
+            </section>
+
+            <!-- Start Here: Navigation Pathways -->
+            <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
+                <div class="px-6 py-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b">
+                    <h3 class="text-lg font-bold text-gray-800">🧭 Start Here</h3>
+                    <p class="text-sm text-gray-600">Jump in based on your interests</p>
+                </div>
+                <div id="pathways-container" class="divide-y divide-gray-100">
+                    <!-- Pathways inserted here -->
+                </div>
+            </section>
+
+            <!-- Overview & Key Provisions (Two Column) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Overview -->
+                <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
+                    <div class="px-6 py-4 bg-gray-50 border-b">
+                        <h3 class="text-lg font-bold text-gray-800">Overview</h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="overview" class="prose prose-gray max-w-none text-gray-700 leading-relaxed space-y-4"></div>
+                    </div>
+                </section>
+
+                <!-- Key Provisions -->
+                <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
+                    <div class="px-6 py-4 bg-gray-50 border-b">
+                        <h3 class="text-lg font-bold text-gray-800">Key Provisions</h3>
+                    </div>
+                    <div class="p-6">
+                        <ul id="key-provisions" class="space-y-4"></ul>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Why It Matters & Historical Context -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
+                    <div class="px-6 py-4 bg-amber-50 border-b">
+                        <h3 class="text-lg font-bold text-gray-800">⚡ Why It Matters</h3>
+                    </div>
+                    <div class="p-6">
+                        <p id="why-it-matters" class="text-gray-700 leading-relaxed"></p>
+                    </div>
+                </section>
+
+                <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
+                    <div class="px-6 py-4 bg-purple-50 border-b">
+                        <h3 class="text-lg font-bold text-gray-800">📜 Historical Context</h3>
+                    </div>
+                    <div class="p-6">
+                        <p id="historical-context" class="text-gray-700 leading-relaxed"></p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Interesting Thread Highlight -->
+            <section class="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-6 text-white shadow-lg animate-fade-in">
+                <div class="flex items-center gap-2 text-slate-400 text-sm mb-3">
+                    <span>💡</span>
+                    <span>Interesting Thread</span>
+                </div>
+                <p id="highlight" class="text-lg leading-relaxed text-slate-200"></p>
+            </section>
+
+            <!-- Browse by Topic -->
+            <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
+                <div class="px-6 py-4 bg-gray-50 border-b flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">📂 Browse by Topic</h3>
+                        <p class="text-sm text-gray-500">Explore all sections organized by subject area</p>
+                    </div>
+                </div>
+                <div id="topics-container" class="divide-y divide-gray-100">
+                    <!-- Topics inserted here -->
+                </div>
+            </section>
+
+            <!-- Notable Sections -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Most Amended -->
+                <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
+                    <div class="px-6 py-4 bg-red-50 border-b">
+                        <h3 class="text-lg font-bold text-gray-800">🔥 Most Legislative History</h3>
+                        <p class="text-sm text-gray-500">Sections amended most frequently</p>
+                    </div>
+                    <div id="most-amended" class="p-4 space-y-2"></div>
+                </section>
+
+                <!-- Newest Sections -->
+                <section class="bg-white rounded-xl shadow-lg overflow-hidden animate-fade-in">
+                    <div class="px-6 py-4 bg-green-50 border-b">
+                        <h3 class="text-lg font-bold text-gray-800">✨ New Sections</h3>
+                        <p class="text-sm text-gray-500">Created by CHIPS and Science Act</p>
+                    </div>
+                    <div id="newest-sections" class="p-4 space-y-2"></div>
+                </section>
+            </div>
+
+            <!-- Section Detail Modal (hidden) -->
+            <div id="section-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+                    <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+                        <h3 id="modal-title" class="font-bold text-lg text-gray-800"></h3>
+                        <button onclick="closeSectionModal()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="modal-content" class="p-6"></div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="text-center text-gray-400 text-sm py-8">
+                <p>Legislative Intelligence System • POC Demo</p>
+                <p class="mt-1">Data sourced from USC XML and Congress.gov</p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let narrativeData = null;
+
+        // Load on page load
+        document.addEventListener('DOMContentLoaded', loadNarrative);
+
+        async function loadNarrative() {
+            try {
+                const response = await fetch(`${API_BASE}/narrative/chips/full`);
+                if (!response.ok) throw new Error('Failed to load narrative');
+
+                narrativeData = await response.json();
+
+                renderHeadline();
+                renderPathways();
+                renderOverview();
+                renderKeyProvisions();
+                renderContext();
+                renderHighlight();
+                renderTopics();
+                renderNotableSections();
+
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error loading narrative:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div class="text-red-500 text-center">
+                        <p class="text-lg font-semibold">Error loading data</p>
+                        <p class="text-sm mt-2">${error.message}</p>
+                        <p class="text-sm mt-2 text-gray-500">Make sure the API server is running</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderHeadline() {
+            document.getElementById('headline').textContent = narrativeData.executive_summary.headline;
+            document.getElementById('created-count').textContent = narrativeData.scope.sections_created;
+            document.getElementById('amended-count').textContent = narrativeData.scope.sections_amended;
+            document.getElementById('topic-count').textContent = narrativeData.topic_groups.length;
+        }
+
+        function renderPathways() {
+            const container = document.getElementById('pathways-container');
+            const pathways = narrativeData.navigation.pathways;
+
+            container.innerHTML = pathways.map((p, i) => `
+                <div class="pathway-card p-4 cursor-pointer" onclick="expandPathway(${i})">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">${getPathwayIcon(p.interest)}</span>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800">If you care about: ${p.interest}</h4>
+                            <p class="text-sm text-gray-600 mt-1">${p.description}</p>
+                            <div class="mt-2 text-sm">
+                                <span class="text-blue-600 font-medium">Start with:</span>
+                                <span class="text-gray-700">${p.start_with}</span>
+                            </div>
+                            ${p.also_see && p.also_see.length ? `
+                                <div class="mt-1 text-sm text-gray-500">
+                                    Also see: ${p.also_see.join(', ')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getPathwayIcon(interest) {
+            const lower = interest.toLowerCase();
+            if (lower.includes('semiconductor') || lower.includes('chip') || lower.includes('manufacturing')) return '🔲';
+            if (lower.includes('energy') || lower.includes('nuclear')) return '⚡';
+            if (lower.includes('workforce') || lower.includes('education') || lower.includes('hiring')) return '👥';
+            if (lower.includes('security') || lower.includes('foreign')) return '🛡️';
+            if (lower.includes('research') || lower.includes('science') || lower.includes('nsf')) return '🔬';
+            if (lower.includes('agency') || lower.includes('federal')) return '🏛️';
+            return '📋';
+        }
+
+        function renderOverview() {
+            const overview = narrativeData.executive_summary.overview;
+            const paragraphs = overview.split('\n\n');
+            document.getElementById('overview').innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+        }
+
+        function renderKeyProvisions() {
+            const container = document.getElementById('key-provisions');
+            const provisions = narrativeData.executive_summary.key_provisions;
+
+            container.innerHTML = provisions.map(p => {
+                // Handle markdown bold **text**
+                const formatted = p.replace(/\*\*([^*]+)\*\*/g, '<strong class="text-gray-900">$1</strong>');
+                return `<li class="provision-item text-gray-700">${formatted}</li>`;
+            }).join('');
+        }
+
+        function renderContext() {
+            document.getElementById('why-it-matters').textContent = narrativeData.executive_summary.why_it_matters;
+            document.getElementById('historical-context').textContent = narrativeData.executive_summary.historical_context;
+        }
+
+        function renderHighlight() {
+            document.getElementById('highlight').textContent = narrativeData.navigation.highlight;
+        }
+
+        function renderTopics() {
+            const container = document.getElementById('topics-container');
+            const topics = narrativeData.topic_groups;
+
+            container.innerHTML = topics.map((topic, i) => `
+                <div class="topic-group">
+                    <div class="px-6 py-4 cursor-pointer hover:bg-gray-50 transition flex justify-between items-center"
+                         onclick="toggleTopic(${i})">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${getTopicIcon(topic.topic)}</span>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">${topic.topic}</h4>
+                                <p class="text-sm text-gray-500">${topic.section_count} sections</p>
+                            </div>
+                        </div>
+                        <svg id="topic-arrow-${i}" class="w-5 h-5 text-gray-400 transition transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                    <div id="topic-content-${i}" class="collapsible-content">
+                        <div class="px-6 pb-4">
+                            <ul class="space-y-1">
+                                ${topic.sample_sections.map(s => `
+                                    <li class="section-link py-2 px-2 rounded cursor-pointer border-l-2 border-transparent hover:border-blue-500"
+                                        onclick="showSection('${s.citation}')">
+                                        <span class="font-mono text-sm text-blue-600">${s.citation}</span>
+                                        <span class="text-gray-600 ml-2">${s.name || ''}</span>
+                                    </li>
+                                `).join('')}
+                                ${topic.section_count > topic.sample_sections.length ? `
+                                    <li class="text-sm text-gray-500 italic py-2 px-2">
+                                        ...and ${topic.section_count - topic.sample_sections.length} more sections
+                                    </li>
+                                ` : ''}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getTopicIcon(topic) {
+            const icons = {
+                'NSF/Research': '🔬',
+                'DOE/Energy': '⚡',
+                'NIST/Standards': '📏',
+                'Semiconductors': '🔲',
+                'Workforce': '👥',
+                'International': '🌐',
+                'Security': '🛡️',
+                'Other': '📋'
+            };
+            return icons[topic] || '📄';
+        }
+
+        function toggleTopic(index) {
+            const content = document.getElementById(`topic-content-${index}`);
+            const arrow = document.getElementById(`topic-arrow-${index}`);
+            content.classList.toggle('expanded');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        function renderNotableSections() {
+            // Most amended
+            const amendedContainer = document.getElementById('most-amended');
+            const amended = narrativeData.navigation.most_amended;
+            amendedContainer.innerHTML = amended.map(s => `
+                <div class="section-link p-3 rounded-lg border cursor-pointer" onclick="showSection('${s.citation}')">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="font-mono text-sm text-blue-600">${s.citation}</span>
+                            <span class="text-gray-600 ml-2 text-sm">${s.name || ''}</span>
+                        </div>
+                        <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium">
+                            ${s.amendment_count}x amended
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Newest
+            const newestContainer = document.getElementById('newest-sections');
+            const newest = narrativeData.navigation.newest;
+            newestContainer.innerHTML = newest.map(s => `
+                <div class="section-link p-3 rounded-lg border cursor-pointer" onclick="showSection('${s.citation}')">
+                    <span class="font-mono text-sm text-blue-600">${s.citation}</span>
+                    <span class="text-gray-600 ml-2 text-sm">${s.name || ''}</span>
+                </div>
+            `).join('');
+        }
+
+        async function showSection(citation) {
+            const modal = document.getElementById('section-modal');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
+
+            title.textContent = citation;
+            content.innerHTML = '<div class="flex justify-center py-8"><div class="spinner"></div></div>';
+            modal.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${API_BASE}/narrative/section/${encodeURIComponent(citation)}`);
+                if (!response.ok) throw new Error('Section not found');
+
+                const data = await response.json();
+                content.innerHTML = `
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Section Name</h4>
+                            <p class="text-gray-800">${data.name || 'Unknown'}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Plain English</h4>
+                            <p class="text-gray-700 leading-relaxed">${data.plain_english}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Why This Exists</h4>
+                            <p class="text-gray-700 leading-relaxed">${data.why_exists}</p>
+                        </div>
+                        ${data.connections && data.connections.length ? `
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Connections</h4>
+                                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                    ${data.connections.map(c => `<li>${c}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        ${data.amendment_story ? `
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Amendment Story</h4>
+                                <p class="text-gray-700 leading-relaxed">${data.amendment_story}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <p>Could not load section details</p>
+                        <p class="text-sm mt-2">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function closeSectionModal() {
+            document.getElementById('section-modal').classList.add('hidden');
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSectionModal();
+        });
+
+        // Close modal on background click
+        document.getElementById('section-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'section-modal') closeSectionModal();
+        });
+    </script>
+</body>
+</html>
