@@ -181,11 +181,12 @@ TOPIC_KEYWORDS = OrderedDict([
     ("Governance/Administration", [
         "rule of construction", "authorities", "reports", "roadmap",
         "coordination", "administration", "oversight", "inspector general",
-        "definitions", "reporting to congress", "online resource",
+        "definitions", "definition", "reporting to congress", "online resource",
         "operation", "maintenance", "reviews", "review", "policy",
         "strategy", "plan", "implementation", "establishment", "purposes",
-        "requirements", "assistant director", "director", "advisory",
+        "purpose", "requirements", "assistant director", "director", "advisory",
         "committee", "council", "board", "findings", "limitation",
+        "responsibilities", "agency",
     ]),
     # General catchall last - this should be broad to catch most remaining sections
     ("NSF/Research", [
