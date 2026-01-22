@@ -17,7 +17,14 @@ from typing import Any
 from functools import lru_cache
 
 import httpx
-from lxml import etree
+
+# lxml is optional - only needed for local XML parsing
+try:
+    from lxml import etree
+    HAS_LXML = True
+except ImportError:
+    HAS_LXML = False
+    etree = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +107,10 @@ class SectionTextService:
 
     def _get_from_xml(self, title: int, section: str) -> str | None:
         """Parse local XML file to get section text."""
+        if not HAS_LXML:
+            logger.debug("lxml not available, skipping XML parsing")
+            return None
+
         xml_file = RAW_USC_DIR / f"usc{title:02d}.xml"
         if not xml_file.exists():
             logger.debug(f"XML file not found: {xml_file}")
@@ -215,6 +226,10 @@ class SectionTextService:
 
         Returns the number of sections cached.
         """
+        if not HAS_LXML:
+            logger.warning("lxml not available, cannot preload from XML")
+            return 0
+
         xml_file = RAW_USC_DIR / f"usc{title:02d}.xml"
         if not xml_file.exists():
             logger.warning(f"XML file not found: {xml_file}")
