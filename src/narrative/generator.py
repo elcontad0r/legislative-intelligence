@@ -85,8 +85,9 @@ CHIPS_PREDECESSORS = [
 
 # CHIPS Act funding authorizations (from Pub. L. 117-167)
 # These are authorization levels, not appropriations - actual spending requires separate bills
+# Note: The $280B figure is often cited but includes authorizations across different timeframes
 CHIPS_FUNDING = {
-    "total": "$280 billion",
+    "total": "$280 billion (five-year authorization, FY2023-2027)",
     "categories": [
         {
             "name": "Semiconductor Manufacturing Incentives",

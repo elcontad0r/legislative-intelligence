@@ -156,7 +156,13 @@ HEADLINE:
 [One punchy sentence that captures what this law does - suitable for a news headline]
 
 OVERVIEW:
-[2-3 paragraphs explaining what this law does, written for someone who follows policy but isn't a legal expert. Be specific about what it authorizes or changes. Don't just list topics - explain the substance. Include key funding figures.]
+[2-3 short paragraphs explaining what this law does. IMPORTANT STRUCTURE:
+- First sentence must state the core mechanism (what the law DOES, not that it's "important" or an "investment")
+- Lead with the two main programs and their dollar amounts
+- Avoid throat-clearing phrases like "This legislation represents..." or "Congress has authorized..."
+- Write for someone who follows policy but isn't a legal expert
+Example good opening: "CHIPS creates two parallel programs: a $52.7B fund to incentivize domestic chip manufacturing, and an $81B expansion of NSF to boost research competitiveness."
+Example bad opening: "This landmark legislation represents a major federal investment in American technology leadership."]
 
 KEY PROVISIONS:
 [5-7 bullet points of the most significant provisions. For each provision:
