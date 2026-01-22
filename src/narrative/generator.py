@@ -183,7 +183,9 @@ TOPIC_KEYWORDS = OrderedDict([
         "coordination", "administration", "oversight", "inspector general",
         "definitions", "reporting to congress", "online resource",
         "operation", "maintenance", "reviews", "review", "policy",
-        "strategy", "plan", "implementation",
+        "strategy", "plan", "implementation", "establishment", "purposes",
+        "requirements", "assistant director", "director", "advisory",
+        "committee", "council", "board", "findings", "limitation",
     ]),
     # General catchall last - this should be broad to catch most remaining sections
     ("NSF/Research", [
